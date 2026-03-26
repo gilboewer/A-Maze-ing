@@ -90,7 +90,4 @@ def load_config(config_file: str) -> dict[str, Any]:
     except ConfigError as e:
         print(f"Invalid config: {e}", file=sys.stderr)
         raise
-    except Exception as e:
-        print(f"Error loading config: {e}", file=sys.stderr)
-        raise
     return config

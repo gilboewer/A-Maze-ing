@@ -11,5 +11,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except Exception:
-        print("Unrecoverable error occured, exeting program.", file=sys.stderr)
+    except Exception as e:
+        print(f"Unrecoverable error occured: {e}. Exeting program.", file=sys.stderr)
