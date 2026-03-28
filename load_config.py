@@ -17,13 +17,13 @@ class ConfigFormatError(ConfigError):
 
 
 class ConfigParseError(ConfigError):
-    def __init__(self, setting: str, value: int, msg: str):
-        super().__init__(f"Invalid value for '{setting}': '{value}' - {msg}")
+    def __init__(self, setting: str, value: Any, msg: str):
+        super().__init__(f"Invalid value for '{setting}': {value} - {msg}")
 
 
 class ConfigValueError(ConfigError):
-    def __init__(self, setting: str, value: int, msg: str):
-        super().__init__()
+    def __init__(self, setting: str, value: Any, msg: str):
+        super().__init__(f"Invalid value for '{setting}': {value} - {msg}")
 
 
 # TODO: Comments
@@ -88,17 +88,32 @@ def convert_value(setting: str, value: Any) -> Any:
     return value
 
 
-# TODO: Value restrictions (f.e. cords < WIDTH, HEIGHT)
+def validate_values(config: dict[str, Any]):
+    for setting, value in config.items():
+        if setting in ("WIDTH", "HEIGHT"):
+            if value <= 0:
+                raise ConfigValueError(setting, value,
+                                       "Must be a non-zero positive integer")
+        if setting in ("Entry", "EXIT"):
+            x, y = value
+            if x < 0 or y < 0:
+                raise ConfigValueError(setting, value,
+                                       "Cannot be negative")
+            width, height = config["WIDTH"], config["HEIGHT"]
+            if x >= width or y >= height:
+                raise ConfigValueError(setting, value,
+                                       "Coordinates exceed maze bounds"
+                                       f" ({width}, {height})")
+
+
+# TODO: Additional settings
 def validate_config(config: dict[str, Any]):
     if not REQUIRED_SETTINGS <= config.keys():
         missing_settings = REQUIRED_SETTINGS - set(config.keys())
         raise ConfigError(
             f"Missing setting(s): '{", ".join(missing_settings)}'")
 
-    # height and width cannot be negative or 0
-    # cords cannot exceed maze bounds
-    # only check setting validity if it is present
-    # etc...
+    validate_values(config)
 
 
 def load_config() -> dict[str, Any]:
