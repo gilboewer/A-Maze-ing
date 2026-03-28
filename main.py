@@ -6,7 +6,7 @@ from load_config import load_config
 
 def main():
     if len(sys.argv) > 2:
-        raise Exception("Program takes only 1 argument: config file")
+        raise Exception("Program takes only 1 optional argument: config file")
 
     config = load_config()
     print(config)
