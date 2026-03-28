@@ -103,7 +103,7 @@ def validate_values(config: dict[str, Any]):
             if x >= width or y >= height:
                 raise ConfigValueError(setting, value,
                                        "Coordinates exceed maze bounds"
-                                       f" ({width}, {height})")
+                                       f" ({width - 1}, {height - 1})")
 
 
 # TODO: Additional settings
