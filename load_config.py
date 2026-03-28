@@ -2,92 +2,108 @@ import sys
 from typing import Any
 
 
-class ConfigError(Exception):
-    pass
-
-
-class ConfigFormatError(ConfigError):
-    def __init__(self, line: str, msg: str):
-        super().__init__(f"'{line}' - {msg}")
-
-
 REQUIRED_SETTINGS = {"WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"}  # noqa: E501
 SETTINGS_TYPES = {"WIDTH": "int", "HEIGHT": "int", "ENTRY": "cords",
                   "EXIT": "cords", "OUTPUT_FILE": "str", "PERFECT": "bool"}
 
 
-# TODO: Handle empty lines
-def read_config(config: dict[str, Any], config_file: str):
-    try:
-        with open(config_file) as cf:
-            for line in cf:
-                line = line.strip('\n')
-                if ' ' in line or '\t' in line:
-                    raise ConfigFormatError(line, "Line cannot contain spaces")
-                if len(line.split('=')) != 2:
-                    raise ConfigFormatError(line, "Line must contain exactly 2 values")
-                setting = line.split('=')[0]
-                value = line.split('=')[1]
-                config[setting] = value
-    except ConfigFormatError:
-        raise
-    except Exception as e:
-        print(f"Error reading config file: {e}", file=sys.stderr)
-        raise
+class ConfigError(Exception):
+    pass
+
+
+class ConfigFormatError(ConfigError):
+    def __init__(self, line_number: int, line: str, msg: str):
+        super().__init__(f"Line {line_number} '{line}' - {msg}")
+
+
+class ConfigParseError(ConfigError):
+    def __init__(self, setting: str, value: int, msg: str):
+        super().__init__(f"Invalid value for '{setting}': '{value}' - {msg}")
+
+
+class ConfigValueError(ConfigError):
+    def __init__(self, setting: str, value: int, msg: str):
+        super().__init__()
+
+
+# TODO: Comments
+def read_config(config: dict[str, Any]):
+    if len(sys.argv) == 2:
+        config_file = sys.argv[1]
+    else:
+        config_file = "default_config.txt"
+
+    with open(config_file) as cf:
+        line_number = 0
+        for line in cf:
+            line_number += 1
+            line = line.strip('\n')
+            if ' ' in line or '\t' in line:
+                raise ConfigFormatError(line_number, line,
+                                        "Line cannot contain spaces")
+            if len(line.split('=')) != 2:
+                raise ConfigFormatError(line_number, line,
+                                        "Line must contain exactly 1 '=' sign")
+            setting = line.split('=')[0]
+            value = line.split('=')[1]
+            if not setting or not value:
+                raise ConfigFormatError(line_number, line,
+                                        "Missing field(s)")
+            config[setting] = value
 
 
 def parse_config(config: dict[str, Any]):
     if not config.keys() <= SETTINGS_TYPES.keys():
         unknown_settings = config.keys() - SETTINGS_TYPES.keys()
-        raise ConfigError(f"Unknown setting(s): '{", ".join(unknown_settings)}'")
+        raise ConfigError(
+            f"Unknown setting(s): '{", ".join(unknown_settings)}'")
 
     for setting, value in config.items():
         config[setting] = convert_value(setting, value)
     return config
 
 
-# TODO: Make this more robust and test this
 def convert_value(setting: str, value: Any) -> Any:
     match SETTINGS_TYPES[setting]:
         case "int":
             try:
                 value = int(value)
             except ValueError:
-                raise ConfigError(f"Invalid integer for '{setting}'")
+                raise ConfigParseError(setting, value, "Not a valid integer")
         case "cords":
             if len(value.split(',')) != 2:
-                raise ConfigError(f"Invalid cords for '{setting}'")
+                raise ConfigParseError(setting, value, "Expected 'x,y'")
             try:
                 value = (int(value.split(',')[0]), int(value.split(',')[1]))
             except ValueError:
-                raise ConfigError(f"Invalid cords for '{setting}'")
+                raise ConfigParseError(setting, value, "Invalid coordinates")
         case "bool":
             if value == "True":
                 value = True
             elif value == "False":
                 value = False
             else:
-                raise ConfigError(f"Invalid boolean for '{setting}'")
+                raise ConfigParseError(setting, value,
+                                       "Must be 'True' or 'False'")
     return value
 
 
-# TODO: Value restrictions (f.e. cords < 100, 100)
+# TODO: Value restrictions (f.e. cords < WIDTH, HEIGHT)
 def validate_config(config: dict[str, Any]):
     if not REQUIRED_SETTINGS <= config.keys():
         missing_settings = REQUIRED_SETTINGS - set(config.keys())
-        raise ConfigError(f"Missing setting(s): '{", ".join(missing_settings)}'")
+        raise ConfigError(
+            f"Missing setting(s): '{", ".join(missing_settings)}'")
+
+    # height and width cannot be negative or 0
+    # cords cannot exceed maze bounds
+    # only check setting validity if it is present
+    # etc...
 
 
-def load_config(config_file: str) -> dict[str, Any]:
+def load_config() -> dict[str, Any]:
     config = {}
-    try:
-        read_config(config, config_file)
-        parse_config(config)
-        validate_config(config)
-    except ConfigFormatError as e:
-        print(f"Invalid config format: {e}", file=sys.stderr)
-        raise
-    except ConfigError as e:
-        print(f"Invalid config: {e}", file=sys.stderr)
-        raise
+    read_config(config)
+    parse_config(config)
+    validate_config(config)
     return config
