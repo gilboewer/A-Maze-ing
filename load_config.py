@@ -88,6 +88,16 @@ def convert_value(setting: str, value: Any) -> Any:
     return value
 
 
+# TODO: Additional settings
+def validate_config(config: dict[str, Any]):
+    if not REQUIRED_SETTINGS <= config.keys():
+        missing_settings = REQUIRED_SETTINGS - set(config.keys())
+        raise ConfigError(
+            f"Missing setting(s): '{", ".join(missing_settings)}'")
+
+    validate_values(config)
+
+
 def validate_values(config: dict[str, Any]):
     for setting, value in config.items():
         if setting in ("WIDTH", "HEIGHT"):
@@ -104,16 +114,6 @@ def validate_values(config: dict[str, Any]):
                 raise ConfigValueError(setting, value,
                                        "Coordinates exceed maze bounds"
                                        f" ({width - 1}, {height - 1})")
-
-
-# TODO: Additional settings
-def validate_config(config: dict[str, Any]):
-    if not REQUIRED_SETTINGS <= config.keys():
-        missing_settings = REQUIRED_SETTINGS - set(config.keys())
-        raise ConfigError(
-            f"Missing setting(s): '{", ".join(missing_settings)}'")
-
-    validate_values(config)
 
 
 def load_config() -> dict[str, Any]:

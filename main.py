@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 import sys
 from load_config import load_config
 
@@ -9,7 +10,7 @@ def main():
         raise Exception("Program takes only 1 optional argument: config file")
 
     config = load_config()
-    print(config)
+    print("config: ", config)
 
 
 if __name__ == "__main__":
