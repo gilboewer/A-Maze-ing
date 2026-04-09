@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-
-
 import sys
-from load_config import load_config
+from loadconfig import load_config
 
 
 def main():

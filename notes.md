@@ -15,6 +15,7 @@
 - Look into mypy and typing module
 - Make venv for dependency isolation during development
 - Check if default needs to be selected when arg isnt valid file or do we just exit?
+- Config comments
 
 # Before submission
 - Check requirements then read through subject for missing stuff
