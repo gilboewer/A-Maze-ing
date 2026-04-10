@@ -2,7 +2,7 @@ from errors import ConfigError, ConfigValueError
 
 
 class Maze:
-    def __init__(self, width, height, entry, exit):
+    def __init__(self, width: int, height: int, entry: tuple, exit: tuple):
         self.width = width
         self.height = height
         self.entry = entry
@@ -13,17 +13,21 @@ class Maze:
 
 class MazeGenerator:
     def __init__(self, config: dict):
+        MazeGenerator.validate_config(config)
         self.config = config
 
+    def generate(self):
+        pass
+
     # TODO: Add optional settings
-    # TODO: Test
     @staticmethod
-    def validate_config(config):
+    def validate_config(config: dict):
         REQUIRED_SETTINGS = {"WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"}  # noqa: E501
         OPTIONAL_SETTINGS = {"SEED"}  # noqa: E501
+        SETTINGS = REQUIRED_SETTINGS | OPTIONAL_SETTINGS
 
-        if not config.keys() <= OPTIONAL_SETTINGS:
-            unknown_settings = config.keys() - OPTIONAL_SETTINGS
+        if not config.keys() <= SETTINGS:
+            unknown_settings = config.keys() - SETTINGS
             raise ConfigError(
                 f"Unknown setting(s): '{", ".join(unknown_settings)}'")
 

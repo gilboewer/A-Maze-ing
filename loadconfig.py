@@ -7,7 +7,7 @@ def read_config(config: dict):
     if len(sys.argv) == 2:
         config_file = sys.argv[1]
     else:
-        config_file = "default_config.txt"
+        config_file = "config.txt"
 
     with open(config_file) as cf:
         line_number = 0
@@ -34,25 +34,25 @@ def parse_config(config: dict):
     return config
 
 
-def parse_value(setting: str, value_str: str) -> Any:
-    if len(value_str.split(',')) > 2:
-        raise ConfigParseError(setting, value_str, "Not a valid value format")
-    elif len(value_str.split(',')) == 2:
+def parse_value(setting: str, value: str) -> Any:
+    if len(value.split(',')) > 2:
+        raise ConfigParseError(setting, value, "Not a valid value format")
+    elif len(value.split(',')) == 2:
         try:
-            return int(value_str.split(',')[0]), int(value_str.split(',')[1])
+            return int(value.split(',')[0]), int(value.split(',')[1])
         except ValueError:
-            raise ConfigParseError(setting, value_str,
+            raise ConfigParseError(setting, value,
                                    "2 valid integers expected for cords")
     else:
         try:
-            return int(value_str)
+            return int(value)
         except ValueError:
             pass
-        if value_str == "True":
+        if value == "True":
             return True
-        if value_str == "False":
+        if value == "False":
             return False
-        return value_str
+        return value
 
 
 def load_config() -> dict:
