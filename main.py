@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import sys
+
 from loadconfig import load_config
-from mazegen import MazeGenerator
+# from mazegen import MazeGenerator
 
 
 def main():
@@ -11,8 +12,8 @@ def main():
     config = load_config()
     print("config: ", config)
 
-    MazeGenerator(config)
-    print("MazeGenerator created successfully")
+    # mazegen = MazeGenerator(config)
+    # maze = mazegen.generate()
 
 
 if __name__ == "__main__":

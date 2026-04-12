@@ -1,27 +1,46 @@
+from dataclasses import dataclass, field
+import random
+
 from errors import ConfigError, ConfigValueError
+from kruskal import KruskalMaze
 
 
+@dataclass
 class Maze:
-    def __init__(self, width: int, height: int, entry: tuple, exit: tuple):
-        self.width = width
-        self.height = height
-        self.entry = entry
-        self.exit = exit
-        self.path = []
-        self.grid = [[0 for _ in range(width)] for _ in range(height)]
+    width: int
+    height: int
+    entry: tuple[int, int]
+    exit: tuple[int, int]
+    grid: list[list[int]] = field(default_factory=list)
+    path: list[tuple[int, int]] = field(default_factory=list)
+
+
+# class Maze:
+#     def __init__(self, width: int, height: int):
+#         self.width = width
+#         self.height = height
+#         self.entry = entry
+#         self.exit = exit
+#         self.grid = [[0b1111 for _ in range(width)] for _ in range(height)]
+#         self.path = []
 
 
 class MazeGenerator:
     def __init__(self, config: dict):
-        MazeGenerator.validate_config(config)
+        MazeGenerator.validate(config)
         self.config = config
 
-    def generate(self):
-        pass
+    def generate(self) -> Maze:
+        width, height = self.config["HEIGHT"], self.config["WIDTH"]
+
+        if "SEED" in self.config:
+            random.seed(self.config["SEED"])
+
+        grid = KruskalMaze(width, height).standard_grid()
 
     # TODO: Add optional settings
     @staticmethod
-    def validate_config(config: dict):
+    def validate(config: dict):
         REQUIRED_SETTINGS = {"WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"}  # noqa: E501
         OPTIONAL_SETTINGS = {"SEED"}  # noqa: E501
         SETTINGS = REQUIRED_SETTINGS | OPTIONAL_SETTINGS

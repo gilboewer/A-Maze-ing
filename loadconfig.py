@@ -1,5 +1,6 @@
 import sys
 from typing import Any
+
 from errors import ConfigFormatError, ConfigParseError
 
 
