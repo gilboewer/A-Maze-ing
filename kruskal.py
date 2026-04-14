@@ -74,7 +74,17 @@ class KruskalMaze:
                 self.pathway.append(edge)
 
     def standard_grid(self) -> list[list[int]]:
-        pass
+        grid = [[0b1111 for _ in range(self.width)]
+                for _ in range(self.height)]
+
+        for r, c, direction in self.pathway:
+            if direction == 'right':
+                grid[r][c] &= ~(1 << 1)
+                grid[r][c + 1] &= ~(1 << 3)
+            elif direction == 'down':
+                grid[r][c] &= ~(1 << 2)
+                grid[r + 1][c] &= ~(1 << 0)
+        return grid
 
     def __str__(self):
         open_right = {(r, c) for r, c, d in self.pathway if d == 'right'}
@@ -131,3 +141,6 @@ class KruskalMaze:
 if __name__ == '__main__':
     maze = KruskalMaze(width=12, height=8)
     print(maze)
+    stdgrid = maze.standard_grid()
+    for row in stdgrid:
+        print(row)

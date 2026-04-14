@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 import random
+from enum import Enum
 
 from errors import ConfigError, ConfigValueError
 from kruskal import KruskalMaze
@@ -37,6 +38,33 @@ class MazeGenerator:
             random.seed(self.config["SEED"])
 
         grid = KruskalMaze(width, height).standard_grid()
+
+    def find_path(
+        self, maze: Maze, s: tuple, e: tuple
+    ) -> list[str]:
+        if s == e:
+            return []
+
+        sy, sx = s
+        neighbours = []
+        if sy - 1 >= 0:
+            northpath = self.find_path(maze, (sy - 1, sx), e)
+            if northpath[0] == '/':
+                return ['N']
+        if sx + 1 < maze.width:
+            eastpath = self.find_path(maze, (sy, sx + 1), e)
+            if eastpath[0] == '/':
+                return ['E']
+        if sy + 1 < maze.height:
+            southpath = self.find_path(maze, (sy, sx + 1), e)
+            if southpath[0] == '/':
+                return ['S']
+        if sx - 1 >= 0:
+            westpath = self.find_path(maze, (sy, sx + 1), e)
+            if westpath[0] == '/':
+                return ['W']
+
+
 
     # TODO: Add optional settings
     @staticmethod
