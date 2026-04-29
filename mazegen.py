@@ -1,29 +1,28 @@
-from dataclasses import dataclass, field
+# from dataclasses import dataclass, field
 import random
-from enum import Enum
 
 from errors import ConfigError, ConfigValueError
 from kruskal import KruskalMaze
 
 
-@dataclass
-class Maze:
-    width: int
-    height: int
-    entry: tuple[int, int]
-    exit: tuple[int, int]
-    grid: list[list[int]] = field(default_factory=list)
-    path: list[tuple[int, int]] = field(default_factory=list)
-
-
+# @dataclass
 # class Maze:
-#     def __init__(self, width: int, height: int):
-#         self.width = width
-#         self.height = height
-#         self.entry = entry
-#         self.exit = exit
-#         self.grid = [[0b1111 for _ in range(width)] for _ in range(height)]
-#         self.path = []
+#     width: int
+#     height: int
+#     entry: tuple[int, int]
+#     exit: tuple[int, int]
+#     grid: list[list[int]] = field(default_factory=list)
+#     path: list[tuple[int, int]] = field(default_factory=list)
+
+
+class Maze:
+    def __init__(self, width: int, height: int, entry: tuple, exit: tuple):
+        self.width = width
+        self.height = height
+        self.entry = entry
+        self.exit = exit
+        self.grid: list[list[int]] = []
+        self.path: list[tuple] = []
 
 
 class MazeGenerator:
@@ -33,39 +32,57 @@ class MazeGenerator:
 
     def generate(self) -> Maze:
         width, height = self.config["HEIGHT"], self.config["WIDTH"]
+        entry, exit = self.config["ENTRY"], self.config["EXIT"]
+        perfect = self.config["PERFECT"]
 
         if "SEED" in self.config:
             random.seed(self.config["SEED"])
 
-        grid = KruskalMaze(width, height).standard_grid()
+        maze = Maze(width, height, entry, exit)
+        maze.grid = KruskalMaze(width, height, perfect).standard_grid()
+        self.solve_maze(maze)
+        return maze
 
-    def find_path(
-        self, maze: Maze, s: tuple, e: tuple
-    ) -> list[str]:
-        if s == e:
-            return []
+    def solve_maze(self, maze: Maze) -> None:
+        NORTH = 0
+        EAST = 1
+        SOUTH = 2
+        WEST = 3
 
-        sy, sx = s
-        neighbours = []
-        if sy - 1 >= 0:
-            northpath = self.find_path(maze, (sy - 1, sx), e)
-            if northpath[0] == '/':
-                return ['N']
-        if sx + 1 < maze.width:
-            eastpath = self.find_path(maze, (sy, sx + 1), e)
-            if eastpath[0] == '/':
-                return ['E']
-        if sy + 1 < maze.height:
-            southpath = self.find_path(maze, (sy, sx + 1), e)
-            if southpath[0] == '/':
-                return ['S']
-        if sx - 1 >= 0:
-            westpath = self.find_path(maze, (sy, sx + 1), e)
-            if westpath[0] == '/':
-                return ['W']
+        DIRECTIONS = [
+            (-1,  0, NORTH, SOUTH),
+            (0, +1, EAST,  WEST),
+            (+1,  0, SOUTH, NORTH),
+            (0, -1, WEST,  EAST),
+        ]
 
+        start, end = maze.entry, maze.exit
+        queue = [start]
+        came_from: dict = {start: None}
 
+        while queue:
+            current = queue.pop(0)
+            if current == end:
+                path = []
+                while current is not None:
+                    path.append(current)
+                    current = came_from[current]
+                maze.path = path[::-1]
+                return
 
+            r, c = current
+            for dr, dc, wall_bit, _ in DIRECTIONS:
+                # Move is allowed when the wall bit is 0 (passage present)
+                if maze.grid[r][c] & (1 << wall_bit):
+                    continue
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < maze.height and 0 <= nc < maze.width:
+                    neighbor = (nr, nc)
+                    if neighbor not in came_from:
+                        came_from[neighbor] = current
+                        queue.append(neighbor)
+
+    # TODO: Test entry and exit different coords exception
     # TODO: Add optional settings
     @staticmethod
     def validate(config: dict):
@@ -88,7 +105,7 @@ class MazeGenerator:
                 if value <= 0:
                     raise ConfigValueError(
                         setting, value, "Must be a non-zero positive integer")
-            elif setting in ("Entry", "EXIT"):
+            elif setting in ("ENTRY", "EXIT"):
                 x, y = value
                 if x < 0 or y < 0:
                     raise ConfigValueError(
@@ -103,3 +120,6 @@ class MazeGenerator:
                 if not isinstance(value, bool):
                     raise ConfigValueError(
                         setting, value, "Must be valid boolean")
+
+        if config["ENTRY"] == config["EXIT"]:
+            raise ConfigError("ENTRY and EXIT must be different coordinates")

@@ -1,10 +1,12 @@
 import random
 
 
+# TODO: Remove __str__ (although maybe its ok, keep in for debugging)
 class KruskalMaze:
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, perfect: int = True):
         self.width = width
         self.height = height
+        self.perfect = perfect
         self.cells = width * height
         self.parent = list(range(self.cells))
         self.rank = [0] * self.cells
@@ -65,13 +67,22 @@ class KruskalMaze:
 
         return (a, b)
 
+    # TODO: Remove print
     def _generate(self):
         edges = self.generate_edges()
         random.shuffle(edges)
+        rejected = []
         for edge in edges:
             a, b = self.edge_ids(edge)
             if self.union(a, b):
                 self.pathway.append(edge)
+            else:
+                rejected.append(edge)
+
+        if not self.perfect:
+            self.pathway.append(rejected[0])
+
+        print(self)
 
     def standard_grid(self) -> list[list[int]]:
         grid = [[0b1111 for _ in range(self.width)]
@@ -139,8 +150,8 @@ class KruskalMaze:
 
 
 if __name__ == '__main__':
-    maze = KruskalMaze(width=12, height=8)
-    print(maze)
+    maze = KruskalMaze(12, 8, False)
+    # print(maze)
     stdgrid = maze.standard_grid()
     for row in stdgrid:
         print(row)

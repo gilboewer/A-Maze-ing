@@ -2,7 +2,7 @@
 import sys
 
 from loadconfig import load_config
-# from mazegen import MazeGenerator
+from mazegen import MazeGenerator
 
 
 def main():
@@ -10,10 +10,9 @@ def main():
         raise Exception("Program takes only 1 optional argument: config file")
 
     config = load_config()
-    print("config: ", config)
-
-    # mazegen = MazeGenerator(config)
-    # maze = mazegen.generate()
+    mazegen = MazeGenerator(config)
+    maze = mazegen.generate()
+    print("path: ", maze.path)
 
 
 if __name__ == "__main__":
