@@ -11,10 +11,11 @@ def main():
 
     config = load_config()
     mazegen = MazeGenerator(config)
-    maze = mazegen.generate()
+    maze = mazegen.generate(True)
     print("path: ", maze.path)
 
 
+# TODO: Activate error handling
 if __name__ == "__main__":
     try:
         main()

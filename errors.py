@@ -1,6 +1,3 @@
-from typing import Any
-
-
 class ConfigError(Exception):
     pass
 
@@ -16,5 +13,5 @@ class ConfigParseError(ConfigError):
 
 
 class ConfigValueError(ConfigError):
-    def __init__(self, setting: str, value: Any, msg: str):
-        super().__init__(f"Invalid value for '{setting}': '{value}'. {msg}")
+    def __init__(self, setting: str, msg: str):
+        super().__init__(f"Invalid value for '{setting}'. {msg}")

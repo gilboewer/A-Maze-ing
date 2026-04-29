@@ -16,9 +16,9 @@ from kruskal import KruskalMaze
 
 
 class Maze:
-    def __init__(self, width: int, height: int, entry: tuple, exit: tuple):
-        self.width = width
+    def __init__(self, height: int, width: int, entry: tuple, exit: tuple):
         self.height = height
+        self.width = width
         self.entry = entry
         self.exit = exit
         self.grid: list[list[int]] = []
@@ -30,17 +30,20 @@ class MazeGenerator:
         MazeGenerator.validate(config)
         self.config = config
 
-    def generate(self) -> Maze:
-        width, height = self.config["HEIGHT"], self.config["WIDTH"]
+    def generate(self, output_to_file: bool) -> Maze:
+        height, width = self.config["HEIGHT"], self.config["WIDTH"]
         entry, exit = self.config["ENTRY"], self.config["EXIT"]
         perfect = self.config["PERFECT"]
 
         if "SEED" in self.config:
             random.seed(self.config["SEED"])
 
-        maze = Maze(width, height, entry, exit)
-        maze.grid = KruskalMaze(width, height, perfect).standard_grid()
+        maze = Maze(height, width, entry, exit)
+        kmaze = KruskalMaze(height, width, entry, exit, perfect)
+        maze.grid = kmaze.standard_grid()
         self.solve_maze(maze)
+        if self.output_to_file:
+            self.output_to_file(maze)
         return maze
 
     def solve_maze(self, maze: Maze) -> None:
@@ -72,7 +75,6 @@ class MazeGenerator:
 
             r, c = current
             for dr, dc, wall_bit, _ in DIRECTIONS:
-                # Move is allowed when the wall bit is 0 (passage present)
                 if maze.grid[r][c] & (1 << wall_bit):
                     continue
                 nr, nc = r + dr, c + dc
@@ -82,7 +84,45 @@ class MazeGenerator:
                         came_from[neighbor] = current
                         queue.append(neighbor)
 
-    # TODO: Test entry and exit different coords exception
+    def output_to_file(self, maze: Maze):
+        with open(self.config["OUTPUT_FILE"], 'w') as output_file:
+            for y in range(maze.height):
+                for x in range(maze.width):
+                    print(hex(maze.grid[y][x])[2:], end='', file=output_file)
+                print(file=output_file)
+
+            print(file=output_file)
+            print(f"{maze.entry[1]},{maze.entry[0]}", file=output_file)
+            print(f"{maze.exit[1]},{maze.exit[0]}", file=output_file)
+
+            dir_path = self.cell_path_to_dir_path(maze.path)
+            for dir in dir_path:
+                print(dir, end='', file=output_file)
+            print(file=output_file)
+
+    def cell_path_to_dir_path(self, path: list[tuple]) -> list[str]:
+        dir_path = []
+        for i in range(len(path[:-1])):
+            cur = path[i]
+            next = path[i + 1]
+            cur_y, cur_x = cur
+            next_y, next_x = next
+
+            if next_y > cur_y:
+                dir_path.append('S')
+                continue
+            if next_y < cur_y:
+                dir_path.append('N')
+                continue
+            if next_x > cur_x:
+                dir_path.append('E')
+                continue
+            if next_x < cur_x:
+                dir_path.append('W')
+                continue
+        return dir_path
+
+    # TODO: Test with seed
     # TODO: Add optional settings
     @staticmethod
     def validate(config: dict):
@@ -104,22 +144,20 @@ class MazeGenerator:
             if setting in ("WIDTH", "HEIGHT"):
                 if value <= 0:
                     raise ConfigValueError(
-                        setting, value, "Must be a non-zero positive integer")
+                        setting, "Must be a non-zero positive integer")
             elif setting in ("ENTRY", "EXIT"):
-                x, y = value
+                y, x = value
                 if x < 0 or y < 0:
                     raise ConfigValueError(
-                        setting, value, "Cannot be negative")
+                        setting, "Cannot be negative")
                 width, height = config["WIDTH"], config["HEIGHT"]
                 if x >= width or y >= height:
                     raise ConfigValueError(
-                        setting, value,
-                        "Coordinates exceed maze bounds"
-                        f" ({width - 1}, {height - 1})")
+                        setting, "Coordinates exceed maze bounds")
             elif setting == "PERFECT":
                 if not isinstance(value, bool):
                     raise ConfigValueError(
-                        setting, value, "Must be valid boolean")
+                        setting, "Must be valid boolean")
 
         if config["ENTRY"] == config["EXIT"]:
             raise ConfigError("ENTRY and EXIT must be different coordinates")

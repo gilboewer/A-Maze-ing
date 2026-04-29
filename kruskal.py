@@ -1,12 +1,18 @@
 import random
+import sys
+
+from errors import ConfigError
 
 
 # TODO: Remove __str__ (although maybe its ok, keep in for debugging)
 class KruskalMaze:
-    def __init__(self, width: int, height: int, perfect: int = True):
-        self.width = width
+    def __init__(self, height: int, width: int,
+                 entry: tuple, exit: tuple, perfect: int = True):
         self.height = height
+        self.width = width
         self.perfect = perfect
+        self.entry = entry
+        self.exit = exit
         self.cells = width * height
         self.parent = list(range(self.cells))
         self.rank = [0] * self.cells
@@ -40,7 +46,46 @@ class KruskalMaze:
             for _ in range(self.height)
         ]
 
+        self.carve_42symbol(grid)
+
+        entry_y, entry_x = self.entry
+        exit_y, exit_x = self.exit
+        if grid[entry_y][entry_x] is False:
+            raise ConfigError("Entry coords are inside 42 symbol")
+        if grid[exit_y][exit_x] is False:
+            raise ConfigError("Exit coords are inside 42 symbol")
         return grid
+
+    def carve_42symbol(self, grid: list[list[bool]]):
+        if self.height > 5 and self.width > 7:
+            hor = True
+            ver = False
+            vstart_42 = (self.height - 5) // 2
+            hstart_42 = (self.width - 7) // 2
+
+            # 4
+            self.carve_line((vstart_42, hstart_42), ver, 3, grid)
+            self.carve_line((vstart_42 + 2, hstart_42), hor, 3, grid)
+            self.carve_line((vstart_42 + 2, hstart_42 + 2), ver, 3, grid)
+
+            # 2
+            self.carve_line((vstart_42, hstart_42 + 4), hor, 3, grid)
+            self.carve_line((vstart_42, hstart_42 + 6), ver, 3, grid)
+            self.carve_line((vstart_42 + 2, hstart_42 + 4), hor, 3, grid)
+            self.carve_line((vstart_42 + 2, hstart_42 + 4), ver, 3, grid)
+            self.carve_line((vstart_42 + 4, hstart_42 + 4), hor, 3, grid)
+        else:
+            print("Maze too small, omitting 42 symbol.", file=sys.stderr)
+
+    def carve_line(self, s: tuple, hor: bool,
+                   len: int, grid: list[list[bool]]):
+        y, x = s
+        if hor:
+            for i in range(len):
+                grid[y][x + i] = False
+        else:
+            for i in range(len):
+                grid[y + i][x] = False
 
     def generate_edges(self) -> list[tuple]:
         grid = self.generate_grid()
@@ -147,11 +192,3 @@ class KruskalMaze:
             (True,  True,  True,  True): '┼',
         }
         return table.get((down_left, down_right, right_up, right_down), '┼')
-
-
-if __name__ == '__main__':
-    maze = KruskalMaze(12, 8, False)
-    # print(maze)
-    stdgrid = maze.standard_grid()
-    for row in stdgrid:
-        print(row)

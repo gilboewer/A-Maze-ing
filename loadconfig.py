@@ -40,7 +40,7 @@ def parse_value(setting: str, value: str) -> Any:
         raise ConfigParseError(setting, value, "Not a valid value format")
     elif len(value.split(',')) == 2:
         try:
-            return int(value.split(',')[0]), int(value.split(',')[1])
+            return int(value.split(',')[1]), int(value.split(',')[0])
         except ValueError:
             raise ConfigParseError(setting, value,
                                    "2 valid integers expected for cords")
