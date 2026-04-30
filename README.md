@@ -214,4 +214,4 @@ This project is part of the 42 school curriculum and is for educational purposes
 ---
 
 *Last Updated: [30/04/2026]*
-*Status: Chapter V Complete - ASCII Renderer Functional*
+*Status: Chapter V WIP - ASCII Renderer Functional*
