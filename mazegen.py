@@ -5,16 +5,6 @@ from errors import ConfigError, ConfigValueError
 from kruskal import KruskalMaze
 
 
-# @dataclass
-# class Maze:
-#     width: int
-#     height: int
-#     entry: tuple[int, int]
-#     exit: tuple[int, int]
-#     grid: list[list[int]] = field(default_factory=list)
-#     path: list[tuple[int, int]] = field(default_factory=list)
-
-
 class Maze:
     def __init__(self, height: int, width: int, entry: tuple, exit: tuple):
         self.height = height

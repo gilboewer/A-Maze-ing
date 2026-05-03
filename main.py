@@ -12,7 +12,7 @@ def main():
     config = load_config()
     mazegen = MazeGenerator(config)
     maze = mazegen.generate(True)
-    print("path: ", maze.path)
+    # print("path: ", maze.path)
 
 
 # TODO: Activate error handling

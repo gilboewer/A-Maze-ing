@@ -18,6 +18,7 @@ class KruskalMaze:
         self.rank = [0] * self.cells
         self.pathway = []
         self._generate()
+        print(self)
 
     def root(self, x: int) -> int:
         while self.parent[x] != x:
@@ -126,8 +127,6 @@ class KruskalMaze:
 
         if not self.perfect:
             self.pathway.append(rejected[0])
-
-        print(self)
 
     def standard_grid(self) -> list[list[int]]:
         grid = [[0b1111 for _ in range(self.width)]
