@@ -11,18 +11,18 @@ if TYPE_CHECKING:
 @dataclass
 class ASCIIRenderer(BaseRenderer):
     """Renders a maze using ASCII characters in the terminal."""
-    
+
     maze: 'Maze'
     show_path: bool = False
     wall_color: str = "white"
-    
+
     def draw(self) -> None:
         """Draw the entire maze with colors and markers."""
         for y in range(self.maze.height):
             self._draw_top_edge(y)
             self._draw_cell_interior(y)
         self._draw_bottom_edge()
-    
+
     def _draw_top_edge(self, y: int) -> None:
         """Draw the top horizontal edges for row y."""
         line = ""
@@ -36,7 +36,7 @@ class ASCIIRenderer(BaseRenderer):
                 line += "   "
         line += colorize("+", self.wall_color)
         print(line)
-    
+
     def _draw_cell_interior(self, y: int) -> None:
         """Draw the cell interiors for row y."""
         line = ""
@@ -48,15 +48,15 @@ class ASCIIRenderer(BaseRenderer):
                 line += colorize("|", self.wall_color)
             else:
                 line += " "
-            
+
             # Draw cell content
             content = self._get_cell_content(x, y)
             line += content
-        
+
         # Draw right boundary
         line += colorize("|", self.wall_color)
         print(line)
-    
+
     def _draw_bottom_edge(self) -> None:
         """Draw the bottom boundary of the maze."""
         line = ""
@@ -65,10 +65,10 @@ class ASCIIRenderer(BaseRenderer):
             line += colorize("---", self.wall_color)
         line += colorize("+", self.wall_color)
         print(line)
-    
+
     def _get_cell_content(self, x: int, y: int) -> str:
         """Get the content to display in a cell.
-        
+
         Priority:
         1. Entry marker (E)
         2. Exit marker (X)
@@ -77,15 +77,18 @@ class ASCIIRenderer(BaseRenderer):
         """
         if self.is_entry(x, y):
             return " E "
-        
+
         if self.is_exit(x, y):
             return " X "
-        
+
         if self.show_path and self.is_on_path(x, y):
             return " • "
-        
+
+        if self.is_on_42(x, y):
+            return " # "
+
         return "   "
-    
+
     def cycle_color(self) -> None:
         """Cycle to the next wall color."""
         super().cycle_color(COLOR_NAMES)
