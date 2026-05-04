@@ -12,15 +12,17 @@
 - Must use default config if none is specified
 
 # TODO
-- Look into mypy and typing module
+- Makefile
+  - pip install
+- Testing framework
 - Make venv for dependency isolation during development
-- Check if default needs to be selected when arg isnt valid file or do we just exit?
-- Config comments !!!!!
-- -> None for all functions
+- docstrings for everything, according to some guidelines (check also Kevins)
+    - "Include docstrings in functions and classes following PEP 257 (e.g., Google or
+        NumPy style) to document purpose, parameters, and returns."
 
 # Before submission
-- Check requirements then read through subject for missing stuff
 - Finish and remove TOODs in code
+- Check if everything works on pc in 42, including Makefile
 
 # Note:
 - If adding new config settings, make sure to validate them

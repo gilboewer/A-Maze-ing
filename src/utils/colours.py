@@ -17,11 +17,9 @@ COLOR_NAMES = list(COLORS.keys())
 
 def colorize(text: str, color: str) -> str:
     """Apply ANSI color to text.
-    
     Args:
         text: Text to colorize
         color: Color name from COLORS dict
-    
     Returns:
         Colored text with reset code
     """

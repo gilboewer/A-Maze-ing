@@ -1,26 +1,22 @@
 import sys
 from typing import Any
+from errors import ConfigFormatError, ConfigParseError, ConfigError
 
-from errors import ConfigFormatError, ConfigParseError
 
-
-def read_config(config: dict):
-    if len(sys.argv) == 2:
-        config_file = sys.argv[1]
-    else:
-        config_file = "config.txt"
-
+def read_config(config_file: str, config: dict) -> None:
     with open(config_file) as cf:
         line_number = 0
         for line in cf:
             line_number += 1
+            if line.strip()[0] == '#':
+                continue
             line = line.strip('\n')
-            if ' ' in line or '\t' in line:
-                raise ConfigFormatError(line_number, line,
-                                        "Line cannot contain spaces")
             if len(line.split('=')) != 2:
                 raise ConfigFormatError(line_number, line,
                                         "Line must contain exactly 1 '=' sign")
+            if ' ' in line or '\t' in line:
+                raise ConfigFormatError(line_number, line,
+                                        "Line cannot contain spaces")
             setting = line.split('=')[0]
             value = line.split('=')[1]
             if not setting or not value:
@@ -29,10 +25,9 @@ def read_config(config: dict):
             config[setting] = value
 
 
-def parse_config(config: dict):
+def parse_config(config: dict) -> None:
     for setting, value in config.items():
         config[setting] = parse_value(setting, value)
-    return config
 
 
 def parse_value(setting: str, value: str) -> Any:
@@ -57,7 +52,14 @@ def parse_value(setting: str, value: str) -> Any:
 
 
 def load_config() -> dict:
-    config = {}
-    read_config(config)
+    config: dict = {}
+    if len(sys.argv) == 2:
+        config_file = sys.argv[1]
+    else:
+        config_file = "config.txt"
+    try:
+        read_config(config_file, config)
+    except FileNotFoundError:
+        raise ConfigError(f"Config file '{config_file}' not found")
     parse_config(config)
     return config

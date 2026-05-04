@@ -4,10 +4,10 @@ Main entry point for the maze application.
 """
 import os
 import sys
-from t_maze import Maze
 from renderers import ASCIIRenderer
 from loadconfig import load_config
 from mazegen import MazeGenerator
+from utils import COLOR_NAMES
 
 
 def clear_screen() -> None:
@@ -49,6 +49,8 @@ def main() -> None:
         # Show current state
         print(f"\nPath: {'VISIBLE' if renderer.show_path else 'HIDDEN'}")
         print(f"Wall Color: {renderer.wall_color.upper()}")
+        if maze.height <= 5 and maze.width <= 7:
+            print("Maze is too small for 42 symbol!")
 
         # Show menu
         display_menu()
@@ -61,7 +63,7 @@ def main() -> None:
             print("Path toggled!")
 
         elif choice == 'c':
-            renderer.cycle_color()
+            renderer.cycle_color(COLOR_NAMES)
             print(f"Color changed to: {renderer.wall_color}")
 
         elif choice == 'r':

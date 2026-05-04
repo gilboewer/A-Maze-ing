@@ -89,6 +89,6 @@ class ASCIIRenderer(BaseRenderer):
 
         return "   "
 
-    def cycle_color(self) -> None:
+    def cycle_color(self, color_names: list[str]) -> None:
         """Cycle to the next wall color."""
         super().cycle_color(COLOR_NAMES)
