@@ -43,7 +43,6 @@ def main() -> None:
     # Create maze and renderer
     config = load_config()
     mazegen = MazeGenerator(config)
-    # TODO: Remove maze self print
     maze = mazegen.generate(True)
     renderer = ASCIIRenderer(maze, show_path=False, wall_color="white")
 
@@ -76,9 +75,6 @@ def main() -> None:
             print(f"Color changed to: {renderer.wall_color}")
 
         elif choice == 'r':
-            # For now, just create a new Maze instance
-            # Later this will call your MazeGenerator
-            # TODO: Should I generate a new file each time?
             maze = mazegen.generate(True)
             renderer.maze = maze
             print("Maze regenerated!")
@@ -92,11 +88,10 @@ def main() -> None:
             input("Press Enter to continue...")
 
 
-# TODO: Activate error handling
 if __name__ == "__main__":
-    # try:
-    main()
-    # except Exception as e:
-    #     print(f"{e.__class__.__name__}: {e}", file=sys.stderr)
-    #     print("Exeting program.", file=sys.stderr)
-    #     sys.exit(1)
+    try:
+        main()
+    except Exception as e:
+        print(f"{e.__class__.__name__}: {e}", file=sys.stderr)
+        print("Exeting program.", file=sys.stderr)
+        sys.exit(1)

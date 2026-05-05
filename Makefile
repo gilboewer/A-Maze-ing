@@ -1,7 +1,7 @@
 MAIN = src/main.py
 
 install:
-	@echo "This project has no dependencies."
+	pip install -r requirements.txt
 
 run:
 	python3 $(MAIN)

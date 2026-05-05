@@ -142,8 +142,6 @@ class MazeGenerator:
                 continue
         return dir_path
 
-    # TODO: Test with seed
-    # TODO: Add optional settings
     @staticmethod
     def validate(config: dict) -> None:
         """
@@ -192,7 +190,6 @@ class MazeGenerator:
             raise ConfigError("ENTRY and EXIT must be different coordinates")
 
 
-# TODO: Remove __str__ (although maybe its ok, keep in for debugging)
 class KruskalMaze:
     """
     Implements Kruskal's algorithm for maze generation.
