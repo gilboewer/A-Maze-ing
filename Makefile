@@ -2,7 +2,7 @@ install:
 	pip
 
 run:
-	python3 main.py
+	python3 src/main.py
 
 debug:
 	python -m pdb main.py

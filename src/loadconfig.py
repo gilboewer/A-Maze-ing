@@ -4,6 +4,16 @@ from errors import ConfigFormatError, ConfigParseError, ConfigError
 
 
 def read_config(config_file: str, config: dict) -> None:
+    """
+    Reads configuration from a file and populates the config dictionary.
+
+    Args:
+        config_file (str): Path to the configuration file.
+        config (dict): Dictionary to populate with configuration settings.
+
+    Raises:
+        ConfigFormatError: If the file format is invalid.
+    """
     with open(config_file) as cf:
         line_number = 0
         for line in cf:
@@ -26,11 +36,33 @@ def read_config(config_file: str, config: dict) -> None:
 
 
 def parse_config(config: dict) -> None:
+    """
+    Parses string values in the config dictionary into appropriate types.
+
+    Args:
+        config (dict): Configuration dictionary with string values.
+
+    Raises:
+        ConfigParseError: If a value cannot be parsed.
+    """
     for setting, value in config.items():
         config[setting] = parse_value(setting, value)
 
 
 def parse_value(setting: str, value: str) -> Any:
+    """
+    Parses a single configuration value into the appropriate type.
+
+    Args:
+        setting (str): The configuration setting name.
+        value (str): The string value to parse.
+
+    Returns:
+        Any: The parsed value (int, bool, str, or tuple).
+
+    Raises:
+        ConfigParseError: If the value format is invalid.
+    """
     if len(value.split(',')) > 2:
         raise ConfigParseError(setting, value, "Not a valid value format")
     elif len(value.split(',')) == 2:
@@ -52,6 +84,15 @@ def parse_value(setting: str, value: str) -> Any:
 
 
 def load_config() -> dict:
+    """
+    Loads configuration from file or default.
+
+    Returns:
+        dict: Parsed configuration dictionary.
+
+    Raises:
+        ConfigError: If config file is not found or invalid.
+    """
     config: dict = {}
     if len(sys.argv) == 2:
         config_file = sys.argv[1]

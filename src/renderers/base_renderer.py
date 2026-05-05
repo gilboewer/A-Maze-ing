@@ -8,10 +8,8 @@ if TYPE_CHECKING:
 
 @dataclass
 class BaseRenderer:
-    """Base class for maze renderers.
-
-    Contains portable logic that works for both ASCII and MLX.
-    Subclasses only need to implement the drawing primitives.
+    """
+    Base class for maze renderers with shared logic.
     """
 
     maze: 'Maze'
@@ -19,14 +17,17 @@ class BaseRenderer:
     wall_color: str = "white"
 
     def toggle_path(self) -> None:
-        """Toggle path visibility."""
+        """
+        Toggles path visibility.
+        """
         self.show_path = not self.show_path
 
     def cycle_color(self, color_names: list[str]) -> None:
-        """Cycle to next color in the list.
+        """
+        Cycles to the next color in the list.
 
         Args:
-            color_names: List of available color names
+            color_names (list[str]): List of available color names.
         """
         try:
             current_index = color_names.index(self.wall_color)
@@ -37,20 +38,59 @@ class BaseRenderer:
             self.wall_color = color_names[0]
 
     def is_entry(self, x: int, y: int) -> bool:
-        """Check if cell is the entry point."""
+        """
+        Checks if cell is the entry point.
+
+        Args:
+            x (int): X coordinate.
+            y (int): Y coordinate.
+
+        Returns:
+            bool: True if entry, False otherwise.
+        """
         return (y, x) == self.maze.entry
 
     def is_exit(self, x: int, y: int) -> bool:
-        """Check if cell is the exit point."""
+        """
+        Checks if cell is the exit point.
+
+        Args:
+            x (int): X coordinate.
+            y (int): Y coordinate.
+
+        Returns:
+            bool: True if exit, False otherwise.
+        """
         return (y, x) == self.maze.exit
 
     def is_on_path(self, x: int, y: int) -> bool:
-        """Check if cell is on the solution path."""
+        """
+        Checks if cell is on the solution path.
+
+        Args:
+            x (int): X coordinate.
+            y (int): Y coordinate.
+
+        Returns:
+            bool: True if on path, False otherwise.
+        """
         return (y, x) in self.maze.path
 
     def is_on_42(self, x: int, y: int) -> bool:
+        """
+        Checks if cell is part of the 42 symbol.
+
+        Args:
+            x (int): X coordinate.
+            y (int): Y coordinate.
+
+        Returns:
+            bool: True if on 42 symbol, False otherwise.
+        """
         return self.maze.grid[y][x] == 0xF
 
     def draw(self) -> None:
-        """Draw the maze. Must be implemented by subclasses."""
+        """
+        Draws the maze. Must be implemented by subclasses.
+        """
         raise NotImplementedError("Subclasses must implement draw()")

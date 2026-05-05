@@ -16,12 +16,15 @@ COLOR_NAMES = list(COLORS.keys())
 
 
 def colorize(text: str, color: str) -> str:
-    """Apply ANSI color to text.
+    """
+    Applies ANSI color to text.
+
     Args:
-        text: Text to colorize
-        color: Color name from COLORS dict
+        text (str): Text to colorize.
+        color (str): Color name from COLORS dict.
+
     Returns:
-        Colored text with reset code
+        str: Colored text with reset code.
     """
     if color in COLORS:
         return COLORS[color] + text + RESET

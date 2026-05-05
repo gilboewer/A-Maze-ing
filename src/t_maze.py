@@ -1,5 +1,18 @@
 class Maze:
+    """
+    Represents a maze with grid, entry, exit, and path.
+    """
+
     def __init__(self, height: int, width: int, entry: tuple, exit: tuple):
+        """
+        Initializes the Maze.
+
+        Args:
+            height (int): Maze height.
+            width (int): Maze width.
+            entry (tuple): Entry coordinates (y, x).
+            exit (tuple): Exit coordinates (y, x).
+        """
         self.height = height
         self.width = width
         self.entry = entry
@@ -8,9 +21,18 @@ class Maze:
         self.path: list[tuple] = []
 
     def has_wall(self, x: int, y: int, direction: str) -> bool:
-        """Check if cell has a wall in given direction.
+        """
+        Checks if the cell has a wall in the given direction.
 
-        PORTABLE METHOD - used by both ASCII and MLX renderers.
+        Portable method used by both ASCII and MLX renderers.
+
+        Args:
+            x (int): X coordinate.
+            y (int): Y coordinate.
+            direction (str): Direction ('N', 'E', 'S', 'W').
+
+        Returns:
+            bool: True if wall exists, False otherwise.
         """
         if not (0 <= x < self.width and 0 <= y < self.height):
             return False

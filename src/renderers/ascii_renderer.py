@@ -1,7 +1,7 @@
 """ASCII terminal renderer for mazes."""
 from dataclasses import dataclass
 from renderers import BaseRenderer
-from utils import colorize, COLOR_NAMES
+from utils import colorize
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -10,21 +10,30 @@ if TYPE_CHECKING:
 
 @dataclass
 class ASCIIRenderer(BaseRenderer):
-    """Renders a maze using ASCII characters in the terminal."""
+    """
+    Renders a maze using ASCII characters in the terminal.
+    """
 
     maze: 'Maze'
     show_path: bool = False
     wall_color: str = "white"
 
     def draw(self) -> None:
-        """Draw the entire maze with colors and markers."""
+        """
+        Draws the entire maze with colors and markers.
+        """
         for y in range(self.maze.height):
             self._draw_top_edge(y)
             self._draw_cell_interior(y)
         self._draw_bottom_edge()
 
     def _draw_top_edge(self, y: int) -> None:
-        """Draw the top horizontal edges for row y."""
+        """
+        Draws the top horizontal edges for row y.
+
+        Args:
+            y (int): Row index.
+        """
         line = ""
         for x in range(self.maze.width):
             line += colorize("+", self.wall_color)
@@ -38,7 +47,12 @@ class ASCIIRenderer(BaseRenderer):
         print(line)
 
     def _draw_cell_interior(self, y: int) -> None:
-        """Draw the cell interiors for row y."""
+        """
+        Draws the cell interiors for row y.
+
+        Args:
+            y (int): Row index.
+        """
         line = ""
         for x in range(self.maze.width):
             # Draw left wall or boundary
@@ -58,7 +72,9 @@ class ASCIIRenderer(BaseRenderer):
         print(line)
 
     def _draw_bottom_edge(self) -> None:
-        """Draw the bottom boundary of the maze."""
+        """
+        Draws the bottom boundary of the maze.
+        """
         line = ""
         for x in range(self.maze.width):
             line += colorize("+", self.wall_color)
@@ -67,13 +83,21 @@ class ASCIIRenderer(BaseRenderer):
         print(line)
 
     def _get_cell_content(self, x: int, y: int) -> str:
-        """Get the content to display in a cell.
+        """
+        Gets the content to display in a cell.
 
         Priority:
         1. Entry marker (E)
         2. Exit marker (X)
         3. Path marker (•) if show_path is True
         4. Empty space
+
+        Args:
+            x (int): X coordinate.
+            y (int): Y coordinate.
+
+        Returns:
+            str: Cell content string.
         """
         if self.is_entry(x, y):
             return " E "
@@ -90,5 +114,10 @@ class ASCIIRenderer(BaseRenderer):
         return "   "
 
     def cycle_color(self, color_names: list[str]) -> None:
-        """Cycle to the next wall color."""
-        super().cycle_color(COLOR_NAMES)
+        """
+        Cycles to the next wall color.
+
+        Args:
+            color_names (list[str]): List of available color names.
+        """
+        super().cycle_color(color_names)

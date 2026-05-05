@@ -11,12 +11,16 @@ from utils import COLOR_NAMES
 
 
 def clear_screen() -> None:
-    """Clear the terminal screen."""
+    """
+    Clears the terminal screen.
+    """
     os.system('clear' if os.name != 'nt' else 'cls')
 
 
 def display_menu() -> None:
-    """Display the interactive menu options."""
+    """
+    Displays the interactive menu options.
+    """
     print("\n" + "="*50)
     print("CONTROLS:")
     print("  [p] Toggle path display")
@@ -27,7 +31,12 @@ def display_menu() -> None:
 
 
 def main() -> None:
-    """Main interactive loop."""
+    """
+    Main interactive loop for the maze application.
+
+    Handles user input for toggling path display, changing wall color,
+    regenerating maze, and quitting the application.
+    """
     if len(sys.argv) > 2:
         raise Exception("Program takes only 1 optional argument: config file")
 
