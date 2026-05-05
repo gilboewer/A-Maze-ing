@@ -1,4 +1,4 @@
-MAIN = src/main.py
+MAIN = src/a_maze_ing.py
 
 install:
 	pip install -r requirements.txt

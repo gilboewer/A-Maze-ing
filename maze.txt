@@ -1,15 +1,6 @@
-b95793d553b
-c0112ed3902
-d2eec57c6ae
-d2f953fff87
-92fed057fc3
-aefffafff96
-8397fafd503
-ea87fafff82
-d007d057d2e
-92851053bc3
-eeed6c7c456
+b
+e
 
-1,1
-9,9
-SSSWSSESSESEEEEESEEENW
+0,0
+0,1
+S
