@@ -1,11 +1,13 @@
+MAIN = src/main.py
+
 install:
-	pip
+	@echo "This project has no dependencies."
 
 run:
-	python3 src/main.py
+	python3 $(MAIN)
 
 debug:
-	python -m pdb main.py
+	python -m pdb $(MAIN)
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
