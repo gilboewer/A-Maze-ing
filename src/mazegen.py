@@ -174,11 +174,8 @@ class MazeGenerator:
                         setting, "Must be a non-zero positive integer")
             elif setting in ("ENTRY", "EXIT"):
                 y, x = value
-                if x < 0 or y < 0:
-                    raise ConfigValueError(
-                        setting, "Cannot be negative")
                 width, height = config["WIDTH"], config["HEIGHT"]
-                if x >= width or y >= height:
+                if x < 0 or y < 0 or x >= width or y >= height:
                     raise ConfigValueError(
                         setting, "Coordinates exceed maze bounds")
             elif setting == "PERFECT":
