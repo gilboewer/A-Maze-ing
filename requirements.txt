@@ -1,7 +1,4 @@
 build==1.5.0
-iniconfig==2.3.0
+mazegen @ file:///home/gil/42-repos/A-Maze-ing/mazegen-1.0.0-py3-none-any.whl#sha256=94376045f93d5a5eb18ed3f0ebcba1e66d8669faa36a420752237247388e369d
 packaging==26.2
-pluggy==1.6.0
-Pygments==2.20.0
 pyproject_hooks==1.2.0
-pytest==9.0.3

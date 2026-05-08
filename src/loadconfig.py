@@ -1,6 +1,6 @@
 import sys
 from typing import Any
-from errors import ConfigFormatError, ConfigParseError, ConfigError
+from mazegen import ConfigFormatError, ConfigParseError, ConfigError
 
 
 def read_config(config_file: str, config: dict) -> None:
