@@ -159,12 +159,12 @@ class MazeGenerator:
         if not config.keys() <= SETTINGS:
             unknown_settings = config.keys() - SETTINGS
             raise ConfigError(
-                f"Unknown setting(s): '{", ".join(unknown_settings)}'")
+                f"Unknown setting(s): '{', '.join(unknown_settings)}'")
 
         if not REQUIRED_SETTINGS <= config.keys():
             missing_settings = REQUIRED_SETTINGS - set(config.keys())
             raise ConfigError(
-                f"Missing setting(s): '{", ".join(missing_settings)}'")
+                f"Missing setting(s): '{', '.join(missing_settings)}'")
 
         for setting, value in config.items():
             if setting in ("WIDTH", "HEIGHT"):
