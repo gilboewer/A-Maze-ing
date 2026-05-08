@@ -4,10 +4,10 @@ Main entry point for the maze application.
 """
 import os
 import sys
-from src.renderers import ASCIIRenderer
-from src.loadconfig import load_config
-from src.mazegen import MazeGenerator
-from src.utils import COLOR_NAMES
+from renderers import ASCIIRenderer
+from loadconfig import load_config
+from mazegen import MazeGenerator
+from utils import COLOR_NAMES
 
 
 def clear_screen() -> None:

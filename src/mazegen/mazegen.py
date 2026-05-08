@@ -1,7 +1,7 @@
 # from dataclasses import dataclass, field
 import random
 
-from .errors import ConfigError, ConfigValueError
+from errors import ConfigError, ConfigValueError
 from .t_maze import Maze
 
 

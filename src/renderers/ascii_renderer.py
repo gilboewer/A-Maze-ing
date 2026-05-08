@@ -1,11 +1,11 @@
 """ASCII terminal renderer for mazes."""
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
-from ..renderers import BaseRenderer
-from ..utils import colorize
+from .base_renderer import BaseRenderer
+from utils import colorize
 
 if TYPE_CHECKING:
-    from t_maze import Maze
+    from ..mazegen import Maze
 
 
 @dataclass

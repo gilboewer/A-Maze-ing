@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from t_maze import Maze
+    from mazegen import Maze
 
 
 @dataclass
