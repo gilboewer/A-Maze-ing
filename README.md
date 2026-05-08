@@ -1,217 +1,126 @@
+*This project has been created as part of the 42 curriculum by gilboewer, kgeromel, spacecodesailor.*
+
 # A-Maze-ing
-
-*This project has been created as part of the 42 curriculum by [gboewer] & [kgeromel].*
-
----
 
 ## Description
 
-A-Maze-ing is a maze generator and visualization tool written in Python. The project generates random mazes with configurable parameters and provides an interactive ASCII terminal interface for visualization. The maze generation logic is designed to be reusable and can be integrated into other projects as a standalone package.
+A-Maze-ing is an interactive maze generator and visualizer written in Python. The project allows users to generate mazes using Kruskal's algorithm, display them in the terminal with ASCII art, and interact with the maze by toggling the solution path, changing colors, and regenerating new mazes. The goal is to create a fun and educational tool for exploring maze generation algorithms while providing a modular architecture that separates maze generation logic from rendering.
 
-**Current Status:** Chapter V (Visual Representation) - WIP
-
-The project currently features:
-- ASCII terminal-based maze rendering with colored walls
-- Interactive controls for path visualization
-- Entry and exit markers
-- Scalable rendering (works with any maze size)
-- Modular architecture ready for MLX graphical rendering
-- Missing 42 logo
-
----
-
-## Features
-
-### Visual Representation (Chapter V - Complete)
-- ✅ **ASCII Terminal Rendering** - Clean text-based maze display
-- ✅ **Entry/Exit Markers** - Clear indication of start (E) and end (X) points
-- ✅ **Interactive Controls**:
-  - Toggle path visibility (show/hide solution)
-  - Cycle through wall colors (white, red, green, blue, yellow, magenta, cyan)
-  - Regenerate maze (currently reloads hardcoded maze)
-  - Quit application
-- ✅ **Scalable Design** - Renderer works with any maze dimensions
-
-### In Development
-- ⏳ "42" pattern visualization
-- ⏳ MLX graphical rendering
-
----
-
-## Project Structure / Renderer Only - Without generated maze
-
-```
-a-maze-ing/
-├── a_maze_ing.py              # Main entry point with interactive loop
-├── maze.py                    # Maze data structure and wall checking logic
-├── renderers/
-│   ├── __init__.py           # Package initialization
-│   ├── base_renderer.py      # Base renderer class (portable logic)
-│   └── ascii_renderer.py     # ASCII terminal renderer implementation
-├── utils/
-│   ├── __init__.py           # Package initialization
-│   └── colours.py            # ANSI color codes and colorization utilities
-├── config.txt                # Default configuration file (TODO)
-├── README.md                 # This file
-└── Makefile                  # Build automation (TODO)
-```
-
----
+The application features:
+- Maze generation using Kruskal's algorithm
+- ASCII-based terminal rendering with color support
+- Interactive controls for path display, color cycling, and regeneration
+- Configurable maze parameters via a text file
+- Optional "42" symbol carving in the center of larger mazes
 
 ## Instructions
 
-### Requirements
-- Python 3.10 or later
-- Terminal with ANSI color support
-
 ### Installation
 
-1. Clone the repository:
+1. Create a virtual environment and install dependencies:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   make install
+   ```
+
+### Execution
+
+Run the application with:
 ```bash
-git clone <repository_url>
-cd a-maze-ing
+make run
 ```
 
-2. No external dependencies required for basic ASCII rendering
+- `config_file`: Optional path to a configuration file (defaults to `config.txt` if not provided).
 
-### Running the Application
+The application will display the maze and show interactive controls. Use the following keys:
+- `p`: Toggle path display (show/hide solution)
+- `c`: Change wall color (cycles through available colors)
+- `r`: Regenerate maze
+- `q`: Quit the application
 
-```bash
-python3 a_maze_ing.py
+### Configuration File Structure
+
+The configuration file is a plain text file with key-value pairs, one per line. Lines starting with `#` are comments and are ignored. The complete structure is as follows:
+
+```
+WIDTH=<int>          # Number of columns (must be > 0)
+HEIGHT=<int>         # Number of rows (must be > 0)
+ENTRY=<int>,<int>    # Entry coordinates as row,col (must be within bounds)
+EXIT=<int>,<int>     # Exit coordinates as row,col (must differ from ENTRY)
+OUTPUT_FILE=<str>    # Path to output file for maze data
+PERFECT=<bool>       # True for perfect maze (no loops), False for imperfect (adds one loop)
+SEED=<int>           # Optional random seed for reproducible mazes
 ```
 
-### Interactive Controls
+Example:
+```
+WIDTH=11
+HEIGHT=11
+ENTRY=1,1
+EXIT=9,9
+OUTPUT_FILE=maze.txt
+PERFECT=True
+# This is a comment
+```
 
-Once the maze is displayed, you can use the following commands:
+## Maze Generation Algorithm
 
-| Key | Action |
-|-----|--------|
-| `p` | Toggle path display (show/hide solution) |
-| `c` | Change wall color (cycles through available colors) |
-| `r` | Regenerate maze (reload maze - will connect to generator later) |
-| `q` | Quit the application |
+The project uses **Kruskal's algorithm** for maze generation. Kruskal's algorithm is a minimum spanning tree algorithm that treats maze cells as nodes and possible passages between them as edges. It randomly selects edges and adds them to the maze if they connect different components, ensuring no cycles are formed in perfect mazes.
 
----
+### Why Kruskal's Algorithm?
 
-## Architecture Overview
+Kruskal's algorithm was chosen for several reasons:
+- **Efficiency**: It runs in O(E log E) time where E is the number of edges, making it suitable for generating large mazes quickly.
+- **Guarantees perfect mazes**: When PERFECT=True, it produces mazes with exactly one path between any two cells.
+- **Flexibility**: The algorithm can be easily modified to create imperfect mazes by adding extra passages.
+- **Simplicity**: The implementation is straightforward and educational, aligning with the project's learning goals.
+- **Union-Find optimization**: Uses path compression and union by rank for optimal performance.
 
-### Portable Design Philosophy
+## Reusable Code
 
-The codebase is architected with **portability** in mind, separating rendering logic from maze logic:
+The project is designed with modularity in mind, making several components reusable:
 
-**Portable Components** (Shared between ASCII and MLX):
-- `Maze` class - Data structure and wall checking
-- `BaseRenderer` - Common logic (path toggling, color cycling, entry/exit checking)
-- Maze generation algorithms (when implemented)
-
-**Renderer-Specific Components**:
-- `ASCIIRenderer` - Terminal-based drawing using print statements
-- `MLXRenderer` (future) - Graphical rendering using pixel buffers
-
-This separation allows approximately **60-70% code reuse** when transitioning from ASCII to graphical rendering.
-
-### Maze Data Structure
-
-Mazes are represented using a **hexadecimal wall encoding**:
-- Each cell stores a 4-bit value (0x0 to 0xF)
-- Each bit represents a wall direction:
-  - Bit 0 (value 1): North wall
-  - Bit 1 (value 2): East wall
-  - Bit 2 (value 4): South wall
-  - Bit 3 (value 8): West wall
-
-**Example:** `0xF = 1111 binary` = all 4 walls present
-
-### Code Reusability
-
-**Reusable Module:** `t_maze.py`
-
-The `Maze` class provides:
-- `has_wall(x, y, direction)` - Check if a cell has a wall in a given direction
-- Wall data access through clean API
-- Entry/exit coordinate storage
-- Solution path storage
-
-**Usage Example:**
+### mazegen Package
+The `mazegen` package is a standalone library for maze generation that can be imported into other Python projects:
 ```python
-from maze import Maze
+from mazegen import MazeGenerator
 
-# Create a maze instance
-maze = Maze(width=10, height=10)
-
-# Check for walls
-if maze.has_wall(0, 0, 'N'):
-    print("North wall exists at (0,0)")
-
-# Access maze properties
-print(f"Entry: {maze.entry}")
-print(f"Exit: {maze.exit}")
+config = {...}
+generator = MazeGenerator(config)
+maze = generator.generate(output_to_file=False)
 ```
 
-This module will be packaged as `mazegen-*.whl` for easy installation via pip (Chapter VI).
+It includes:
+- `MazeGenerator` class: Handles configuration and maze creation
+- `Maze` class: Represents the generated maze with grid, path, entry, and exit
+- Support for perfect and imperfect mazes
+- Optional seed for reproducibility
 
----
+### Renderer System
+The rendering system uses inheritance for extensibility:
+- `BaseRenderer`: Abstract base class providing common functionality (path toggling, color cycling)
+- `ASCIIRenderer`: Concrete implementation for terminal display
+- Easy to extend with new renderers (e.g., graphical renderers) by inheriting from `BaseRenderer`
 
-## Team and Project Management
+### Utility Modules
+- `utils/colours.py`: Color definitions and utilities
+- `loadconfig.py`: Configuration file parsing
+- `output_validator.py`: Maze validation tools
 
-### Team Members
-- [gboewer] & [kgeromel]
+## Resources
 
-### Roles
-- **Architecture & Design** - Designed modular structure for ASCII/MLX portability
-- **ASCII Renderer Implementation** - Built terminal visualization system
-- **Interactive Controls** - Implemented user input handling
-- **Documentation** - Created comprehensive code documentation and README
+### References
+- [Kruskal's Algorithm - Wikipedia](https://en.wikipedia.org/wiki/Kruskal%27s_algorithm): Overview of the algorithm used for maze generation.
+- [Maze Generation Algorithm - Jamis Buck](https://weblog.jamisbuck.org/2011/1/3/maze-generation-kruskal-s-algorithm): Detailed explanation of implementing Kruskal's for mazes.
+- [Union-Find Data Structure](https://en.wikipedia.org/wiki/Disjoint-set_data_structure): The underlying data structure used in the implementation.
+- [Python Documentation](https://docs.python.org/3/): Official Python documentation for language features used.
 
-### Tools Used
-- **Python 3.10+** - Primary development language
-- **Git** - Version control
-- **VSCode** - Code editor
-- **Terminal** - Testing and visualization
-- **AI Assistant (Claude)** - Code review, architecture discussions, documentation assistance
+### AI Usage
+AI (GitHub Copilot) was used throughout the development process for:
+- Code generation and autocompletion for boilerplate and algorithmic implementations
+- Debugging assistance and error resolution
+- Documentation writing and README structure suggestions
 
----
-
-## AI Usage
-
-### How AI Was Used
-
-AI tools were used to assist with the following aspects of the project:
-
-1. **Architecture Design**
-   - Discussed portable design patterns for renderer separation
-   - Reviewed modular structure for ASCII/MLX compatibility
-
-2. **Code Development**
-   - Helped design the interactive menu system
-
-3. **Documentation**
-   - Created comprehensive inline documentation
-   - Generated this README structure
-   - Explained technical concepts in comments
-
-### What AI Did NOT Do
-
-- **Algorithmic Decisions** - All architectural choices were human-driven
-- **Testing** - All code was manually tested and validated
-- **Problem-Solving** - Core logic and debugging were done independently
-- **Understanding** - Every line of code is fully understood and can be explained
-
-### Critical Review
-
-All AI-generated content was:
-- ✅ Reviewed line-by-line for correctness
-- ✅ Tested in the actual runtime environment
-- ✅ Modified to fit project-specific requirements
-- ✅ Validated against project specifications
-
----
-
-## License
-
-This project is part of the 42 school curriculum and is for educational purposes.
-
----
-
-*Last Updated: [30/04/2026]*
-*Status: Chapter V WIP - ASCII Renderer Functional*
+The core algorithmic logic (Kruskal's implementation) was developed with AI assistance but verified and understood by the developers. AI helped accelerate development while ensuring best practices were followed.</content>
+<parameter name="filePath">/home/gil/42-repos/A-Maze-ing/README.md
